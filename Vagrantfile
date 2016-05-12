@@ -190,6 +190,9 @@ Vagrant.configure(2) do |config|
   machine_types.each do |name, machine_type|
     config.vm.define name do |machine|
       machine.vm.hostname = "#{name}.dcos"
+      if machine_type['type'] == 'master'
+        machine.vm.network :forwarded_port, guest: 80, host: 8999
+      end
 
       # custom hostname aliases
       if machine_type['aliases']
@@ -242,6 +245,8 @@ Vagrant.configure(2) do |config|
           path: provision_script_path("type-#{machine_type['type']}"),
           env: user_config.provision_env
         )
+	
+      
 
         machine.vm.provision(
           :dcos_install,
